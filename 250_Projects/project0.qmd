@@ -1,0 +1,122 @@
+---
+title: "Client Report - Introduction"
+subtitle: "Course DS 250"
+author: "Diego Scarpa Rossi"
+format:
+  html:
+    self-contained: true
+    page-layout: full
+    title-block-banner: true
+    toc: true
+    toc-depth: 3
+    toc-location: body
+    number-sections: false
+    html-math-method: katex
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    code-copy: hover
+    code-tools:
+        source: false
+        toggle: true
+        caption: See code
+execute: 
+  warning: false
+    
+---
+
+### Introduction
+The Palmer penguins dataset is about three different species of penguins that live in a colony in the Palmer Archipelago, Antarctica. It contains information about the penguins' body measurements, like beak length and depth, flipper length, and body mass. It also has information about the sex and age of the penguins.
+
+ 
+```{python}
+#| label: libraries
+#| include: false
+
+
+import pandas as pd
+import numpy as np
+import plotly.express as px
+
+!pip install palmerpenguins
+!pip install setuptools
+
+```
+
+```{python}
+#| label: project-data
+#| code-summary: Read and format project data
+# Include and execute your code here
+
+
+
+from palmerpenguins import load_penguins
+from lets_plot import *
+
+LetsPlot.setup_html(isolated_frame=True)
+
+penguins = load_penguins() #Loading the dataset
+penguins.head() #shows the first 5 rows
+
+```
+
+
+### Elevator Pitch
+
+#### The analysis shows clear differences in BODY MASS and FLIPPER LENGHT among the three penguin species.Gentoo Penguins: They are the largest in body mass. Adelie and Chinstrap Penguins: They have similar sizes.
+
+
+```{python}
+#| label: Q1_
+#| code-summary: Read and format data
+# Include and execute your code here
+# Include import statements here 
+# Include reading data statements here
+
+penguins.info() #Displaying DataFrame info
+
+```
+
+```{python}
+#| label: Q1-chart
+#| code-summary: plot example
+#| fig-cap: "Project0 chart"
+#| fig-align: center
+# Include and execute your code here
+
+fig = px.scatter(
+    data_frame=penguins, # Dataset to be used for the plot
+    x="flipper_length_mm", # X-axis: 
+    y="body_mass_g", # Y-axis: 
+    color="species", # Color points by species
+    symbol="species",  #Use different symbols for each species
+    size_max=10,  
+    opacity=0.7,  #transparency
+    trendline="ols",   #Add a linear trendline (OLS)
+    trendline_scope="species",  # Separate trendline for each species
+    labels={
+        "flipper_length_mm": "Flipper Length (mm)",
+        "body_mass_g": "Body Mass (g)",
+        "species": "Species"
+    },
+    title="Body Mass and Flipper Length<br><sup>Dimensions for Adelie, Chinstrap, and Gentoo Penguins</sup>", # Plot title
+    color_discrete_sequence=px.colors.qualitative.Dark2
+)
+
+fig.show() # Display the chart
+
+```
+
+#### This graph shows the relationship between flipper length (flipper_length_mm) and body mass (body_mass_g) of three species of penguins: Adelie, Chinstrap, and Gentoo.
+
+```{python}
+#| label: Q1-table
+#| code-summary: table example
+#| tbl-cap: "Not much of a table"
+#| tbl-cap-location: top
+# Include and execute your code here
+
+penguins.head(25) #the first 25 rows of the dataset.
+
+
+```

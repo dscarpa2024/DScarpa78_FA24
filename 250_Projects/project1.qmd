@@ -1,0 +1,333 @@
+---
+title: "Client Report - Project 1: What’s in a Name?"
+subtitle: "Course DS 250"
+author: "Diego Scarpa  "
+format:
+  html:
+    self-contained: true
+    page-layout: full
+    title-block-banner: true
+    toc: true
+    toc-depth: 3
+    toc-location: body
+    number-sections: false
+    html-math-method: katex
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    code-copy: hover
+    code-tools:
+        source: false
+        toggle: true
+        caption: See code
+execute: 
+  warning: false
+  echo: true
+    
+---
+
+```{python}
+#| label: libraries
+#| include: false
+import pandas as pd
+import numpy as np
+from lets_plot import *
+LetsPlot.setup_html()
+
+```
+
+
+### Elevator pitch
+
+__Impact of famous characters replacing religious influence:__
+Religious names like Mary, Martha, Peter, and Paul are less popular now. 
+At the same time, names from movies and books, like Arya from Game of Thrones and Elsa from Frozen, are becoming more popular. 
+This shows that characters from movies and books are having more influence. Religious names are used less, and names from movies are used more_
+
+```{python}
+#| label: project-data
+#| code-summary: Read and format project data
+# Include and execute your code here
+link = "https://github.com/byuidatascience/data4names/raw/master/data-raw/names_year/names_year.csv"
+names_data = pd.read_csv(link)
+
+df_clean = names_data.dropna()
+df_clean = df_clean.drop_duplicates()
+df_clean["Total"] = df_clean["Total"].astype(int)
+df_clean["year"] = df_clean["year"].astype(int)
+df_selected = df_clean[["name", "year", "Total"]]
+
+print("Table filtered by ID, Name, Year, and Total births with that name.Head")
+print("")
+print(df_selected.head())
+print("")
+
+print("Grouped by name and total births with that name.")
+print("")
+name_popular = df_selected.groupby("name")["Total"].sum().reset_index()
+print(name_popular.head())
+print("")
+
+print("The most popular names on the list.")
+print("")
+name_popular = name_popular.sort_values(by="Total", ascending=False).head(15)
+print(name_popular)
+print("")
+
+```
+
+
+### QUESTION|TASK 1
+
+__How does your name at your birth year compare to its use historically?__
+
+_My name, being of Spanish origin, has increased in recent years because of the immigration of Latinos to the United States._
+
+
+```{python}
+#| label: Q1
+#| code-summary: Read and format data
+# Include and execute your code here
+# Include import statements here 
+# Include reading data statements here
+
+
+# 1
+diego_data = df_selected[df_selected["name"]=="Diego"]
+
+print("Most popular years and total.")
+print(diego_data.sort_values(by="Total", ascending=False).head(15))
+print("")
+
+birth = int(1978)
+year_data = (diego_data[diego_data["year"]==birth])
+print("Year of my birth and the total for that year.")
+print(year_data)
+
+#1 Max
+max_total = int(diego_data["Total"].max())  
+max_year = diego_data[diego_data["Total"] == max_total]  
+max_year = int(max_year['year'].values[0])  
+
+print("")
+print("Info")
+print(diego_data.dtypes)
+
+```
+
+```{python}
+#| label: Q1-chart
+#| code-summary: plot example
+#| fig-cap: "Q1-Chart"
+#| fig-align: center
+# Include and execute your code here
+
+LetsPlot.setup_html()
+
+fig1 = ggplot(diego_data, aes(x='year', y='Total')) + \
+    geom_line(color='blue') + \
+    ggtitle("Diego")  
+ 
+fig1.show()  
+
+
+
+```
+
+_In the 2000s and 2010s, the name Diego was very popular. According to the graph, the use of this name is decreasing._
+
+```{python}
+#| label: Q1-table
+#| code-summary: table example
+#| tbl-cap: "Not much of a table"
+#| tbl-cap-location: top
+# Include and execute your code here
+'''
+mydat = diego_data.head(1000)\
+    .groupby('year')\
+    .sum()\
+    .reset_index()\
+    .tail(10)\
+    .filter(["year", "AK","AR"])
+
+display(mydat)
+'''
+
+```
+
+
+### QUESTION|TASK 2
+
+__If you talked to someone named Brittany on the phone, what is your guess of his or her age? What ages would you not guess?__
+
+_We will group by decades to determine in which decade this name was used the most._
+
+
+```{python}
+#| label: Q2
+#| code-summary: Read and format data
+# Include and execute your code here
+
+# 2
+
+name_2 = "Brittany"
+
+n2_decades = df_selected[df_selected["name"] == name_2].copy()
+n2_decades['decade'] = (n2_decades['year'] // 10) * 10
+n2_decades['decade'] = n2_decades['decade'].astype(int)
+
+decade_totals = n2_decades.groupby('decade')['Total'].sum().reset_index() 
+print("")
+print("info")
+print(n2_decades.dtypes)
+
+
+```
+
+```{python}
+#| label: Q2-chart
+#| code-summary: plot example
+#| fig-cap: "Q2-Chart"
+#| fig-align: center
+# Include and execute your code here
+
+fig2 = ggplot(decade_totals, aes(x='decade', y='Total')) + \
+    geom_bar(stat='identity', fill='red', color='black') + \
+    ggtitle("Popularity per decade") + \
+    labs(x="Decade", y="Total popularity")
+
+fig2.show()  
+
+```
+
+_In 1990 and 1980, those decades were when that name was used the most. By subtracting 2024 - 1980 and 2024 - 1990, we can suggest that it is 34 years old._
+
+```{python}
+#| label: Q2-table
+#| code-summary: table example
+#| tbl-cap: "Not much of a table"
+#| tbl-cap-location: top
+# Include and execute your code here
+'''
+mydat = df.head(1000)\
+    .groupby('year')\
+    .sum()\
+    .reset_index()\
+    .tail(10)\
+    .filter(["year", "AK","AR"])
+
+display(mydat)
+'''
+```
+
+
+
+### QUESTION|TASK 3
+
+__Mary, Martha, Peter, and Paul are all Christian names. From 1920 - 2000, compare the name usage of each of the four names in a single chart. What trends do you notice?__
+
+_Names like Mary, Martha, Peter, and Paul have experienced a decline in popularity in recent decades. However, 
+their Spanish equivalents have not shown the same decline; on the contrary, some have increased in popularity._
+
+
+```{python}
+#| label: Q3
+#| code-summary: Read and format data
+# Include and execute your code here
+
+c_names = ["Mary", "Martha", "Peter", "Paul"]
+df_3 = df_selected[df_selected["name"].isin(c_names) &
+                  (df_selected["year"]>1920) &
+                   (df_selected["year"]<2000)]
+
+spa_names = ["Maria", "Marta", "Pedro", "Pablo"]
+df_3spa = df_selected[df_selected["name"].isin(spa_names) &
+                  (df_selected["year"]>1920) &
+                   (df_selected["year"]<2000)]
+```
+
+```{python}
+#| label: Q3-chart
+#| code-summary: plot example
+#| fig-cap: "Q3 chart"
+#| fig-align: center
+# Include and execute your code here
+
+fig3 = ggplot(df_3, aes(x='year', y='Total', color='name')) + \
+    geom_line(size=1.5) + \
+    ggtitle("Christian names Over Time (english)")  
+fig3.show()  
+
+fig3spa = ggplot(df_3spa, aes(x='year', y='Total', color='name')) + \
+    geom_line(size=1.5) + \
+    ggtitle("Christian names Over Time (spanish)")  
+
+fig3spa.show()  
+
+```
+
+_Maria has always been very popular, although its use has decreased._
+
+```{python}
+#| label: Q3-table
+#| code-summary: table example
+#| tbl-cap: "Not much of a table"
+#| tbl-cap-location: top
+# Include and execute your code here
+'''
+mydat = df.head(1000)\
+    .groupby('year')\
+    .sum()\
+    .reset_index()\
+    .tail(10)\
+    .filter(["year", "AK","AR"])
+
+display(mydat)
+'''
+
+```
+
+### QUESTION|TASK 4
+
+__Analysis of the Name "Isabella" in Relation to the Movie "Twilight" (2008)__
+
+_The name of an actor, actress, or main character from a bestselling book can help parents decide the name of a newborn, and the answer is yes. For example, Isabella from the 'Twilight' series._
+
+
+```{python}
+#| label: Q4
+#| code-summary: Read and format data
+# Include and execute your code here
+# Include import statements here 
+# Include reading data statements here
+
+name_4 = "Isabella"
+df_name_4 = df_selected[df_selected["name"]== name_4]
+
+```
+
+```{python}
+#| label: Q4-chart
+#| code-summary: plot example
+#| fig-cap: "Q4 Chart"
+#| fig-align: center
+# Include and execute your code here
+
+fig4 = ggplot(df_name_4, aes(x='year', y='Total')) + \
+    geom_line(color='orange') + \
+    ggtitle(f"Popularity {name_4} Over Time ")  
+
+
+fig4.show()
+```
+
+_In 2008, the movie was released, and we can see the new growth of its use._
+
+```{python}
+#| label: Q4-table
+#| code-summary: table example
+#| tbl-cap: "Not much of a table"
+#| tbl-cap-location: top
+# Include and execute your code here
+
+```
